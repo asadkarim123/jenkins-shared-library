@@ -103,8 +103,9 @@ node {
         }
 
         stage('Build') {
-            sh "./gradlew clean build"
+            sh "./gradlew ${gradleDefaultSwitches} clean build ${gradleAdditionalTestTargets} ${gradleAdditionalSwitches} --refresh-dependencies"
             step $class: 'JUnitResultArchiver', testResults: '**/TEST-*.xml'
+
             populateGlobalVariables()
 
             def buildColor = currentBuild.result == null ? "good" : "warning"
