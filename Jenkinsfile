@@ -12,7 +12,7 @@ def nebulaRelease = "-x prepare -x release snapshot ${nebulaReleaseScope}"
 def gradleDefaultSwitches = "${speedUp} ${nebulaRelease}"
 def gradleAdditionalTestTargets = "integrationTest"
 def gradleAdditionalSwitches = "shadowJar"
-def slackNotificationChannel = "[CHANNEL_NAME]"
+def slackNotificationChannel = "#alerts"
 def author = ""
 def message = ""
 def testSummary = ""
@@ -29,7 +29,7 @@ def isResultGoodForPublishing = { ->
 }
 
 def notifySlack(text, channel, attachments) {
-    def slackURL = '[SLACK_WEBHOOK_URL]'
+    def slackURL = 'https://hooks.slack.com/services/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'
     def jenkinsIcon = 'https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png'
 
     def payload = JsonOutput.toJson([text: text,
@@ -40,6 +40,11 @@ def notifySlack(text, channel, attachments) {
     ])
 
     sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}
+node {
+    stage("Post to Slack") {
+        notifySlack("Success!", slackNotificationChannel, [])
+    }
 }
 
 def getGitAuthor = {
