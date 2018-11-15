@@ -41,11 +41,6 @@ def notifySlack(text, channel, attachments) {
 
     sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
 }
-node {
-    stage("Post to Slack") {
-        notifySlack("Success!", slackNotificationChannel, [])
-    }
-}
 
 def getGitAuthor = {
     def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
@@ -108,8 +103,7 @@ node {
         }
 
         stage('Build') {
-            sh "./gradlew ${gradleDefaultSwitches} clean build ${gradleAdditionalTestTargets} ${gradleAdditionalSwitches} --refresh-dependencies"
-            step $class: 'JUnitResultArchiver', testResults: '**/TEST-*.xml'
+
 
             populateGlobalVariables()
 
