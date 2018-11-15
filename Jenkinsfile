@@ -103,7 +103,6 @@ node {
         }
 
         stage('Build') {
-            step $class: 'JUnitResultArchiver', testResults: '**/TEST-*.xml'
 
             populateGlobalVariables()
 
