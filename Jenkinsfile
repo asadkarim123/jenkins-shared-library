@@ -1,5 +1,5 @@
 post {
 always {
-notifySlack currentBuild.result
+slackSend currentBuild.result
 }
 }
