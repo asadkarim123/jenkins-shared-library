@@ -134,17 +134,17 @@ node {
                         fields: [
                             [
                                 title: "Branch",
-                                value: "{env.GIT_BRANCH}",
+                                value: "${env.GIT_BRANCH}",
                                 short: true
                             ],
                             [
                                 title: "Test Results",
-                                value: "testSummary",
+                                value: "${testSummary}",
                                 short: true
                             ],
                             [
                                 title: "Last Commit",
-                                value: "message",
+                                value: "${message}",
                                 short: false
                             ]
                         ]
@@ -172,7 +172,7 @@ node {
                             ],
                             [
                                 title: "Test Results",
-                                value: "testSummary",
+                                value: "${testSummary}",
                                 short: true
                             ],
                             [
