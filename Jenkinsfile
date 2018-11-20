@@ -104,7 +104,7 @@ node {
 
         stage('Build') {
             //sh "./gradlew ${gradleDefaultSwitches} clean build ${gradleAdditionalTestTargets} ${gradleAdditionalSwitches} --refresh-dependencies"
-            //step $class: 'JUnitResultArchiver', testResults: '*/TEST-*.xml'
+            //step $class: 'JUnitResultArchiver', testResults: '**/TEST-*.xml'
             populateGlobalVariables()
 
             def buildColor = currentBuild.result == null ? "good" : "warning"
@@ -179,8 +179,12 @@ node {
                                 title: "Last Commit",
                                 value: "${message}",
                                 short: false
+                            ],                            
+                            [
+                                title: "Jenkins URL",
+                                value: "${JENKINS_URL}",
+                                short: true
                             ]
-                            
                         ]
                     ]
                 ])
