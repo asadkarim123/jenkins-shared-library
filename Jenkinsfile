@@ -171,7 +171,7 @@ node {
                             ],
                             [
                                 title: "Test Results",
-                                value: "https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original",
+                                value: 'https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original',
                                 short: true
                             ],
                             [
