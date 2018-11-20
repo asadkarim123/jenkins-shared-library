@@ -135,17 +135,17 @@ node {
                         fields: [
                             [
                                 title: "Branch",
-                                value: "${env.GIT_BRANCH}",
+                                value: "https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original",
                                 short: true
                             ],
                             [
                                 title: "Test Results",
-                                value: "${testSummary}",
+                                value: "$https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original",
                                 short: true
                             ],
                             [
                                 title: "Last Commit",
-                                value: "${message}",
+                                value: "$https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original",
                                 short: false
                             ]
                         ]
