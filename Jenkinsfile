@@ -103,7 +103,8 @@ node {
         }
 
         stage('Build') {
-
+            //sh "./gradlew ${gradleDefaultSwitches} clean build ${gradleAdditionalTestTargets} ${gradleAdditionalSwitches} --refresh-dependencies"
+            //step $class: 'JUnitResultArchiver', testResults: '*/TEST-*.xml'
             populateGlobalVariables()
 
             def buildColor = currentBuild.result == null ? "good" : "warning"
@@ -171,7 +172,7 @@ node {
                             ],
                             [
                                 title: "Test Results",
-                                value: 'https://vignette.wikia.nocookie.net/battlefordreamislandfanfiction/images/9/9a/Sunny.png/revision/latest?cb=20121117204641&format=original',
+                                value: "testSummary",
                                 short: true
                             ],
                             [
@@ -179,6 +180,7 @@ node {
                                 value: "${message}",
                                 short: false
                             ]
+                            
                         ]
                     ]
                 ])
