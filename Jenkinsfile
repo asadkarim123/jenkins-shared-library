@@ -223,17 +223,17 @@ node {
 
 							[
                                 title: "buildVariables",
-                                value: ${buildVariables},
+                                value: "${buildVariables}",
                                 short: true
                             ],
 							[
                                 title: "changeSets",
-                                value: ${changeSets},
+                                value: "${changeSets}",
                                 short: true
                             ],
 							[
                                 title: "rawBuild",
-                                value: ${rawBuild},
+                                value: "${rawBuild}",
                                 short: true
                             ]
                         ]
