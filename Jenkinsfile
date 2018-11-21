@@ -178,13 +178,59 @@ node {
                             [
                                 title: "Last Commit",
                                 value: "${message}",
-                                short: false
-                            ],                            
-                            [
-                                title: "Jenkins URL",
-                                value: "${JENKINS_URL}",
+                                short: true
+                            ],
+							                            [
+                                title: "BUILD_ID",
+                                value: "${env.BUILD_ID}",
+                                short: true
+                            ],
+							                            [
+                                title: "BUILD_TAG",
+                                value: "${env.BUILD_TAG}",
                                 short: true
                             ]
+							                            [
+                                title: "CVS_BRANCH",
+                                value: "${env.CVS_BRANCH}",
+                                short: true
+                            ],
+							                            [
+                                title: "EXECUTOR_NUMBER",
+                                value: "${env.EXECUTOR_NUMBER}",
+                                short: true
+                            ],
+							                            [
+                                title: "GIT_COMMIT",
+                                value: "${env.GIT_COMMIT}",
+                                short: true
+                            ],
+							                            [
+                                title: "GIT_URL",
+                                value: "${env.GIT_URL}",
+                                short: true
+                            ],
+							                            [
+                                title: "JAVA_HOME",
+                                value: "${env.JAVA_HOME}",
+                                short: true
+                            ],
+														                            [
+                                title: "NODE_NAME",
+                                value: "${env.NODE_NAME}",
+                                short: true
+                            ],
+														                            [
+                                title: "SVN_REVISION",
+                                value: "${env.SVN_REVISION}",
+                                short: true
+                            ],							                            [
+                                title: "WORKSPACE",
+                                value: "${env.WORKSPACE}",
+                                short: true
+                            ]
+							
+                            
                         ]
                     ]
                 ])
