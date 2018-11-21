@@ -219,7 +219,35 @@ node {
                                 title: "SVN_REVISION",
                                 value: "${env.SVN_REVISION}",
                                 short: true
-                            ]
+                            ],
+							{
+    "text": "Would you like to Approve or Decline this incoming Jenkins job?",
+    "attachments": 
+	[
+        {
+            "fallback": "na",
+            "callback_id": "URL Here",
+            "color": "#000000",
+            "actions": 
+			[
+                {
+                    "name": "Approve",
+                    "text": "Approve",
+                    "type": "button",
+                    "value": "approve url here"
+                },
+				                
+				{
+                    "name": "Decline",
+                    "text": "Decline",
+					"style": "danger",
+                    "type": "button",
+                    "value" = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzjCRQZ_7d0Q_2oQ_QJFawWtODegefgJVfHgmRGcdoi7jRQrn1"
+                }
+            ]
+        }
+   ]
+}
                         ]
                     ]
                 ])
