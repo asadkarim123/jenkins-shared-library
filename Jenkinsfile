@@ -272,7 +272,7 @@ node {
             ]
 [
         {
-            "title": "Incoming Jenkins Job",
+		"title"} "Incoming Jenkins Job",
 			"fallback": "na",
             "callback_id": "URL Here",
             "color": "#000000",
