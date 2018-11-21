@@ -207,7 +207,7 @@ node {
                             ],
 							[
                                 title: "GIT_URL",
-                                value: "${GIT_URL}",
+                                value: "${env.GIT_URL}",
                                 short: true
                             ],
 							[
