@@ -219,22 +219,6 @@ node {
                                 title: "SVN_REVISION",
                                 value: "${env.SVN_REVISION}",
                                 short: true
-                            ],
-
-							[
-                                title: "buildVariables",
-                                value: "${buildVariables}",
-                                short: true
-                            ],
-							[
-                                title: "changeSets",
-                                value: "${changeSets}",
-                                short: true
-                            ],
-							[
-                                title: "rawBuild",
-                                value: "${rawBuild}",
-                                short: true
                             ]
                         ]
                     ]
