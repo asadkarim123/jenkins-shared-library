@@ -156,8 +156,7 @@ node {
                         "mrkdwn_in": ["text"],
                     ]
                 ])          
-            } else 
-			{
+            } else {
                 notifySlack("", slackNotificationChannel, [
                     [
                         title: "${jobName}, build #${env.BUILD_NUMBER}",
@@ -221,20 +220,7 @@ node {
                                 value: "${env.SVN_REVISION}",
                                 short: true
                             ],
-							
-                        ]
-                    ]
-                ])
-				{
-								title: "Would you like to Approve or Decline this incoming Jenkins job?",
-								"attachments": 
-					[
-						{
-							"fallback": "na",
-							"callback_id": "URL Here",
-							"color": "#000000",
-							"actions": 
-							[				
+														[				
 						{
 							"name": "Approve",
 							"text": "Approve",
@@ -249,9 +235,10 @@ node {
 							"value": "https://www.google.co.uk/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjChJWZ5eXeAhXD0aQKHf90Dp4QjRx6BAgBEAU&url=https%3A%2F%2Fpngtree.com%2Ffree-png-vectors%2Fthumbs-down&psig=AOvVaw2g9POYn1W0L4BbczNouxLI&ust=1542900168298482"
 						}
 							]
-						}
-					]
-				}
+                        ]
+                    ]
+                ])
+				
             }
         }
         
