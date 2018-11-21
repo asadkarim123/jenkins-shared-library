@@ -224,7 +224,7 @@ node {
                     ]
                 ])
             }
-			{
+						{
     "text": "Would you like to Approve or Decline this incoming Jenkins job?",
     "attachments": 
 	[
@@ -249,8 +249,8 @@ node {
                 }
             ]
         }
-   ]
-}
+		]
+						}
         }
         
         if (isPublishingBranch() && isResultGoodForPublishing()) {
