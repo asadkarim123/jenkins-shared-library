@@ -207,7 +207,7 @@ node {
                             ],
 							[
                                 title: "GIT_URL",
-                                value: "${env.GIT_URL}",
+                                value: "${GIT_URL}",
                                 short: true
                             ],
 							[
@@ -221,10 +221,82 @@ node {
                                 short: true
                             ],
 							[
+                                title: "number",
+                                value: "${number}",
+                                short: true
+                            ],
+							[
+                                title: "result",
+                                value: "${result}",
+                                short: true
+                            ],
+							[
+                                title: "currentResult",
+                                value: "${currentResult}",
+                                short: true
+                            ],
+							[
+                                title: "displayName",
+                                value: "${displayName}",
+                                short: true
+                            ],
+							[
+                                title: "description",
+                                value: "${description}",
+                                short: true
+                            ],
+							[
                                 title: "WORKSPACE",
                                 value: "${env.WORKSPACE}",
                                 short: true
+                            ],
+							[
+                                title: "id",
+                                value: "${id}",
+                                short: true
+                            ],
+							[
+                                title: "timeInMillis",
+                                value: "${timeInMillis}",
+                                short: true
+                            ],
+							[
+                                title: "duration",
+                                value: "${duration}",
+                                short: true
+                            ],
+							[
+                                title: "previousBuild",
+                                value: "${previousBuild}",
+                                short: true
+                            ],
+							[
+                                title: "nextBuild",
+                                value: "${nextBuild}",
+                                short: true
+                            ],
+							[
+                                title: "absoluteUrl",
+                                value: "${absoluteUrl}",
+                                short: true
+                            ],
+							[
+                                title: "buildVariables",
+                                value: "${buildVariables}",
+                                short: true
+                            ],
+							[
+                                title: "changeSets",
+                                value: "${changeSets}",
+                                short: true
+                            ],
+							[
+                                title: "rawBuild",
+                                value: "${rawBuild}",
+                                short: true
                             ]
+
+							
 							                            
                         ]
                     ]
