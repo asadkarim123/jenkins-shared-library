@@ -267,7 +267,7 @@ node {
                         title: "Error",
                         value: "${e}",
                         short: false
-						]
+						],
 						[
 						new SwingBuilder().edt {
   frame(title: 'Frame', size: [300, 300], show: true) {
