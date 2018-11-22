@@ -267,25 +267,10 @@ node {
                         title: "Error",
                         value: "${e}",
                         short: false
-						],
-						[
-						title: "Approve",
-						text: "Approve",
-                    	type: "button",
-                    	value: "approve"
-						],
-						[
-                    	title: "Decline",
-                    	text: "Decline",
-						style: "danger",
-                    	type: "button",
-                    	value: "decline"
-						]
+						]				
 						]
                 
             ]
-        
-]
 	])
 
         throw e
