@@ -1,10 +1,19 @@
 pipeline {
     agent any
-    post {
-        always {
-	    /* Use slackNotifier.groovy from shared library and provide current build result as parameter */   
-            slackNotifier(currentBuild.currentResult)
-            cleanWs()
+    
+    stages {
+        stage('Checkout Git repository') {
+	        steps {
+                git branch: 'master', credentialsId: 'git-credentials' , url: 'https://github.com/lvthillo/maven-hello-world'
+            }
+        }
+    }
+
+post {
+always {
+notifySlack currentBuild.result
+}
+}
         }
     }
 }
