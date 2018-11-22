@@ -267,7 +267,19 @@ node {
                         title: "Error",
                         value: "${e}",
                         short: false
-						]				
+						]
+						[
+						new SwingBuilder().edt {
+  frame(title: 'Frame', size: [300, 300], show: true) {
+    borderLayout()
+    textlabel = label(text: 'Click the button!', constraints: BL.NORTH)
+    button(text:'Click Me',
+         actionPerformed: {
+             println "click :P"
+             new GroovyShell().evaluate(new File('swing.groovy'))    
+         }, constraints:BL.SOUTH)
+  }
+}]
 						]
                 
             ]
