@@ -267,21 +267,21 @@ node {
                         title: "Error",
                         value: "${e}",
                         short: false
-			],
-			[
-			title: "Approve",
-                   	text: "Approve",
+						],
+						[
+						title: "Approve",
+						text: "Approve",
                     	type: "button",
-                    	value: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzjCRQZ_7d0Q_2oQ_QJFawWtODegefgJVfHgmRGcdoi7jRQrn1"
-			],
-			[
+                    	value: "approve"
+						],
+						[
                     	title: "Decline",
                     	text: "Decline",
-			style: "danger",
+						style: "danger",
                     	type: "button",
-                    	value: "https://www.google.co.uk/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjChJWZ5eXeAhXD0aQKHf90Dp4QjRx6BAgBEAU&url=https%3A%2F%2Fpngtree.com%2Ffree-png-vectors%2Fthumbs-down&psig=AOvVaw2g9POYn1W0L4BbczNouxLI&ust=1542900168298482"
-			]
-			]
+                    	value: "decline"
+						]
+						]
                 
             ]
         
