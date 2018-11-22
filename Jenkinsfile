@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Checkout Git repository') {
 	        steps {
-                git branch: 'master', credentialsId: 'git-credentials' , url: 'https://github.com/lvthillo/maven-hello-world'
+                echo "hello world"
             }
         }
     }
