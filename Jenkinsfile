@@ -12,7 +12,7 @@ pipeline {
 
 post {
 always {
-notifySlack currentBuild.result
+notifySlack(currentBuild.result)
 }
 }
         }
