@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     
@@ -15,5 +16,3 @@ notifySlack currentBuild.result
 }
 }
         }
-    }
-}
