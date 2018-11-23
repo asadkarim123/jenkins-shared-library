@@ -1,5 +1,4 @@
-#!groovy
-@Library('jenkins-shared-library')
+@Library('jenkins-shared-library')_
 node {         
 stage("notifySlack") {notifySlack}
 stage("slackNotifyStarted") {slackNotifyStarted}
