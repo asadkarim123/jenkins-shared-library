@@ -1,5 +1,5 @@
 @Library('jenkins-shared-library') _
-stages {
+node {
         stage('hello') {
             echo 'Hello World'
         }
