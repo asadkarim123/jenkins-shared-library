@@ -1,27 +1,10 @@
 #!groovy
 @Library('jenkins-shared-library')
-node {   
-agent any   
-stages {       
-stage("notifySlack") {           
-steps {           notifySlack       
-}
-        stage("slackNotifyStarted") {           
-steps {           slackNotifyStarted       
-}
-                stage("getTestSummary") {           
-steps {           getTestSummary       
-}
-                        stage("getFailedTests") {           
-steps {           getFailedTests       
-}
-                                stage("slackNotifySuccess") {           
-steps {           slackNotifySuccess       
-}
-                                        stage("slackNotifyFailure") {           
-steps {           slackNotifyFailure       
-}
-                                                
-}   
-}
+node {         
+stage("notifySlack") {notifySlack}
+stage("slackNotifyStarted") {slackNotifyStarted}
+stage("getTestSummary") {getTestSummary}
+stage("getFailedTests") {getFailedTests}
+stage("slackNotifySuccess") {slackNotifySuccess}
+stage("slackNotifyFailure") {slackNotifyFailure}                                         
 }
