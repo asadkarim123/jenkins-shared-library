@@ -4,10 +4,6 @@ node {
             echo 'Hello World'
         }
         stage('post'){
-        post{
-        always{
         notifySlack currentBuild.result
-              }
-            }
         }
 }
