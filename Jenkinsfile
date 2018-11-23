@@ -1,9 +1,11 @@
 @Library('jenkins-shared-library') _
-node {
+stages {
         stage('hello') {
             echo 'Hello World'
         }
-        stage('post'){
-        deploy notifySlack
-        }
+}
+post {
+always {
+notifySlack currentBuild.result
+}
 }
