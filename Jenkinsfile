@@ -5,11 +5,7 @@ node {
             echo 'Hello World'
         }
 
-post {
-  always {
-          node('post'){
-notifySlack currentBuild.result
+run  {
+notifySlack
           }
-}
-}
 }
