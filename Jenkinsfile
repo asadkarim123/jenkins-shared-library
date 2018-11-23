@@ -4,6 +4,6 @@ node {
             echo 'Hello World'
         }
         stage('post'){
-        notifySlack
+        notifySlack(currentBuild.currentResult)
         }
 }
