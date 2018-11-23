@@ -5,7 +5,8 @@ node {
         }
 }
 post {
-always {
-notifySlack currentBuild.result
+  always {
+    node(
+notifySlack currentBuild.result)
 }
 }
