@@ -1,0 +1,206 @@
+#!groovy
+
+import groovy.json.JsonOutput
+import hudson.tasks.test.AbstractTestResultAction
+import hudson.model.Actionable
+import hudson.tasks.junit.CaseResult
+
+def label = "mypod-${UUID.randomUUID().toString()}"
+def project = "alert-inquiry-205619"
+def slackNotificationChannel = "#alerts"
+
+def notifySlack(String buildStatus = 'STARTED', String channel = '#alerts') {
+    echo 'Start notifySlack'
+    buildStatus = buildStatus ?: 'SUCCESSFUL'
+    channel = channel ?: '#alerts'
+    echo buildStatus
+    echo 'get author and message'
+    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    def author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    def message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    echo author + ', ' + message
+
+    @NonCPS
+    def getTestSummary = { ->
+        def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+        def summary = ""
+        
+        if (testResultAction != null) {
+            def total = testResultAction.getTotalCount()
+            def failed = testResultAction.getFailCount()
+            def failedDiff = testResultAction.failureDiffString
+            def skipped = testResultAction.getSkipCount()
+            def passed = total - failed - skipped
+
+            summary = "Passed: ${passed}; Failed: ${failed} ${failedDiff}; Skipped: ${skipped}  out of ${total} "
+        } else {
+            summary = "No tests found"
+        }
+        return summary
+    }
+
+    echo 'Get test summary'
+    def testSummary = getTestSummary()
+    echo 'Test summary follows'
+    echo testSummary
+
+    def colorSlack = '#D4DADF'
+
+    def slackURL = 'https://hooks.slack.com/services/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'
+    def jenkinsIcon = 'https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png'
+
+    def attachments = [
+            [
+                    title: "${buildStatus}: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]",
+                    title_link: "${env.BUILD_URL}",
+                    color: "${colorSlack}",
+                    author_name: "${author}",
+                    text: "${message}",
+                    actions: [
+                            [
+                                type: "button",
+                                text: "Run output",
+                                url: "${env.RUN_DISPLAY_URL}",
+                                style: "primary"
+                            ],
+                            [
+                                type: "button",
+                                text: "Changes",
+                                url: "${env.RUN_CHANGES_DISPLAY_URL}"
+                            ],
+                            [
+                                type: "button",
+                                text: "Job history",
+                                url: "${env.JOB_DISPLAY_URL}",
+                                style: "primary"
+                            ]
+                    ],
+                    fields: [
+                            [
+                                title: "Branch",
+                                value: "${env.GIT_BRANCH}",
+                                short: true
+                            ],
+                            [
+                                title: "Test Results",
+                                value: "${testSummary}",
+                                short: true
+                            ]
+                    ]
+            ]//,
+ //           [
+ //                   "fallback": "Sunny weather!",
+ //                   "image_url": "https://www.clipartmax.com/png/middle/165-1652318_public-domain-icons-simple-weather-icons-sunny.png"
+ //           ]
+    ]
+    def payload = JsonOutput.toJson([text: "",
+                                     channel: channel,
+                                     username: "Jenkins",
+                                     icon_url: jenkinsIcon,
+                                     attachments: attachments
+    ])
+
+    sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}
+
+
+podTemplate(label: label, containers: [
+        containerTemplate(name: 'gcloud', image: 'google/cloud-sdk:latest', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'sbt', image: 'spikerlabs/scala-sbt:scala-2.11.12-sbt-1.2.6', ttyEnabled: true, command: 'cat')
+]) {
+
+    ansiColor('xterm') {
+        timestamps {
+            logstash {
+                node(label) {
+
+                    try {
+
+                        container('gcloud') {
+                            stage('1 - Clone repository') {
+                                withCredentials([file(credentialsId: 'key-sa', variable: 'GC_KEY')]) {
+                                    //sh("gcloud auth activate-service-account --key-file=${GC_KEY};")
+                                    //sh("gcloud source repos clone rmg-de-ml --project=${project};")
+                                }
+                            }
+                            checkout scm
+                            echo 'Started'
+                            //notifySlack('STARTED')
+                        }
+
+                        container('sbt') {
+                            stage('2 - Compile') {
+                                //sh('sbt compile;')
+                                echo 'Compile complete'
+                            }
+                            stage('3 - Check Styles') {
+                                //sh('sbt scalastyle;')
+                                //checkstyle pattern: 'target/scalastyle-result.xml'
+
+                                //sh('sbt dependencyUpdatesReport;')
+                                //archiveArtifacts artifacts: 'target/dependency-updates.txt', fingerprint: false
+                                //env.DEPENDENCY_UPDATES = readFile 'target/dependency-updates.txt'
+                            }
+                            stage('4 - Automated Tests') {
+
+                                parallel "4.1 - Unit Tests": {
+                                    sh('sbt clean coverage test;sbt coverageReport;')
+                                    step([$class: 'ScoveragePublisher', reportDir: 'target/scala-2.11/scoverage-report', reportFile: 'scoverage.xml'])
+                                    junit 'target/junit/*.xml'
+                                },
+
+                                        "4.2 - Integration Tests": {
+                                            sh('sleep 5s')
+                                        },
+
+                                        "4.3 - Performance Tests": {
+                                            sh('sleep 10s')
+                                        }
+
+                            }
+                            stage('5 - Package') {
+                                //sh('sbt package;')
+                                //archiveArtifacts artifacts: 'target/**/*.jar', fingerprint: true
+                                echo 'Package complete'
+                            }
+                            stage('6 - Documentation') {
+                                sh('sbt doc;')
+                                publishHTML target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'target/scala-2.11/api',
+                                        reportFiles: '*',
+                                        reportName: 'Scala Docs'
+                                ]
+                            }
+                            stage('7 - Publish') {
+
+                                try{
+                                    //sh('sbt publish;')
+                                    echo 'Publish complete'
+                                } catch (e) {
+                                    retry(2) {
+                                        sleep 10
+                                        sh('sbt publish;')
+                                    }
+                                }
+
+                            }
+                            echo 'Successfully completed'
+                            notifySlack('SUCCESS')
+                            echo 'Success notification sent'
+                        }
+                    }
+                    catch (e) {
+                        notifySlack('FAILURE')
+                        throw e
+                    } finally {
+                        //slackNotify(currentBuild.result)
+                    }
+                }
+            }
+        }
+    }
+}
+
