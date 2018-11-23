@@ -4,7 +4,7 @@ node ("scala_agent") {
             echo 'Hello World'
         }
         
-        stage('post;){
+        stage('post'){
         post    {
         always      {
         notifySlack currentBuild.result
