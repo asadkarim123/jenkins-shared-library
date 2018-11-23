@@ -1,6 +1,6 @@
 #!groovy
 @Library('jenkins-shared-library')
-pipeline {   
+node {   
 agent any   
 stages {       
 stage("notifySlack") {           
