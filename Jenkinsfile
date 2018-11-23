@@ -1,16 +1,13 @@
 @Library('jenkins-shared-library') _
-node ("scala_agent") {
-    try {
+node {
         stage('hello') {
             echo 'Hello World'
         }
-        
         stage('post'){
-        post    {
-        always      {
+        post{
+        always{
         notifySlack currentBuild.result
-                }
-                    }
-                    } 
-         }
-                    }
+              }
+            }
+        }
+}
