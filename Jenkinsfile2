@@ -1,327 +1,302 @@
-1  #!groovy 
-2  
- 
-3  import net.sf.json.JSONArray; 
-4  import net.sf.json.JSONObject; 
-5  import groovy.json.JsonOutput 
-6  import hudson.tasks.test.AbstractTestResultAction 
-7  import hudson.model.Actionable 
-8  import hudson.tasks.junit.CaseResult 
-9  
- 
-10  def label = "mypod-${UUID.randomUUID().toString()}" 
-11  def project = "alert-inquiry-205619" 
-12  def slackNotificationChannel = "#alerts" 
-13  
- 
-14  def author = "" 
-15  def message = "" 
-16  
- 
-17  def populateGitInfo() { 
-18      def commit = sh(returnStdout: true, script: 'git rev-parse HEAD') 
-19      author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim() 
-20      echo author + '(inside method)' 
-21      message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim() 
-22      echo message + '(inside method)' 
-23  } 
-24  
- 
-25  def notifySlack(text, channel, attachments) { 
-26      def slackURL = 'https://hooks.slack.com/services/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' 
-27      def jenkinsIcon = 'https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png' 
-28  
- 
-29      def payload = JsonOutput.toJson([text: text, 
-30          channel: channel, 
-31          username: "Jenkins", 
-32          icon_url: jenkinsIcon, 
-33          attachments: attachments 
-34      ]) 
-35  
- 
-36      sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}" 
-37  } 
-38  
- 
-39  def slackNotifyStarted() { 
-40      echo 'Notification Start' 
-41      def colorSlack = '#D4DADF' 
-42      populateGitInfo() 
-43      echo 'Git info populated' 
-44      echo author + message 
-45       
-46      notifySlack("", "#alerts", [ 
-47          [ 
-48              title: "STARTED: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]", 
-49              title_link: "${env.BUILD_URL}", 
-50              color: "${colorSlack}", 
-51              author_name: "${author}", 
-52              text: "${message}", 
-53              actions: [ 
-54              [ 
-55                type: "button", 
-56                text: "Pipeline", 
-57                url: "${env.RUN_DISPLAY_URL}" 
-58              ], 
-59              [ 
-60                type: "button", 
-61                text: "Changes", 
-62                url: "${env.RUN_CHANGES_DISPLAY_URL}" 
-63              ], 
-64              [ 
-65                type: "button", 
-66                text: "Job history", 
-67                url: "${env.JOB_DISPLAY_URL}" 
-68              ] 
-69            ], 
-70            fields: [ 
-71                  [ 
-72                      title: "Git Branch", 
-73                      value: "${env.GIT_BRANCH}", 
-74                      short: true 
-75                  ], 
-76                  [ 
-77                      title: "Git Commit", 
-78                      value: "${env.GIT_COMMIT}", 
-79                      short: true 
-80                  ] 
-81              ] 
-82          ] 
-83      ]) 
-84  } 
-85  
- 
-86  @NonCPS 
-87  String getTestSummary() {  
-88      def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class) 
-89      def summary = "" 
-90  
- 
-91      if (testResultAction != null) { 
-92          def total = testResultAction.getTotalCount() 
-93          def failed = testResultAction.getFailCount() 
-94          def failedDiff = testResultAction.failureDiffString 
-95          def skipped = testResultAction.getSkipCount() 
-96          def passed = total - failed - skipped 
-97  
- 
-98          summary = "Passed: ${passed}; Failed: ${failed} ${failedDiff}; Skipped: ${skipped}  out of ${total} " 
-99      } else { 
-100          summary = "No tests found" 
-101      } 
-102      return summary 
-103  } 
-104  
- 
-105  @NonCPS 
-106  def getFailedTests() { 
-107      def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class) 
-108      def failedTestsString = "" 
-109  
- 
-110      if (testResultAction != null) { 
-111          echo 'check test failures 1' 
-112          def failedTests = testResultAction.getFailedTests() 
-113          echo 'check test failures 2' 
-114          if (failedTests.size() > 9) { 
-115              failedTests = failedTests.subList(0, 8) 
-116          } 
-117          echo 'check test failures 3' 
-118          for(CaseResult cr : failedTests) { 
-119              echo 'check test failures loop' 
-120              failedTestsString = failedTestsString + "${cr.getFullDisplayName()}:\n${cr.getErrorDetails()}\n\n" 
-121          } 
-122          echo 'check test failures 4' 
-123      } 
-124      echo 'check test failures 5' + failedTestsString 
-125      return failedTestsString 
-126  } 
-127  
- 
-128  @NonCPS 
-129  def slackNotifySuccess() { 
-130      echo 'Notification Success' 
-131      def colorSlack = '#229954' 
-132      def testSummary = getTestSummary() 
-133      echo 'Test summary completed' 
-134      echo 'Test summary' + testSummary 
-135      notifySlack("", "#alerts", [ 
-136          [ 
-137              title: "SUCCESS: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]", 
-138              title_link: "${env.BUILD_URL}", 
-139              color: "${colorSlack}", 
-140              author_name: "${author}", 
-141              text: "${message}", 
-142              actions: [ 
-143              [ 
-144                type: "button", 
-145                text: "Pipeline", 
-146                url: "${env.RUN_DISPLAY_URL}", 
-147                style: "primary" 
-148              ], 
-149              [ 
-150                type: "button", 
-151                text: "Changes", 
-152                url: "${env.RUN_CHANGES_DISPLAY_URL}", 
-153                style: "primary" 
-154              ], 
-155              [ 
-156                type: "button", 
-157                text: "Job history", 
-158                url: "${env.JOB_DISPLAY_URL}", 
-159                style: "primary" 
-160              ] 
-161            ], 
-162            fields: [ 
-163                  [ 
-164                      title: "Test Results", 
-165                      value: "${testSummary}", 
-166                      short: true 
-167                  ] 
-168              ] 
-169          ], 
-170          [ 
-171             "fallback": "Sunny weather!", 
-172             "image_url": "https://www.clipartmax.com/png/middle/165-1652318_public-domain-icons-simple-weather-icons-sunny.png" 
-173          ] 
-174      ]) 
-175  } 
-176  
- 
-177  @NonCPS 
-178  def slackNotifyFailure(e) { 
-179      echo 'Notify failure' 
-180      def colorSlack = '#FF9FA1' 
-181      def slackMessage = "FAILURE: Job `${env.JOB_NAME}` [<${env.BUILD_URL}|#${env.BUILD_NUMBER}>] (<${env.RUN_DISPLAY_URL}|  Pipeline>)\n\t" 
-182      try{ 
-183          def testSummary = getTestSummary() 
-184          echo 'Test summary completed' 
-185          echo 'Test summary' + testSummary 
-186          def failedTests = getFailedTests() 
-187          echo 'Failed tests completed' 
-188          echo 'Failed tests' + failedTests 
-189          slackMessage = slackMessage + "```" + testSummary + "```\n\t" 
-190          slackMessage = slackMessage + "```" + failedTests + "```\n\t" 
-191          if (e != null){ 
-192              slackMessage = slackMessage + "```" + e.toString() + "```\n\t" 
-193          }         
-194      } catch(ex) { 
-195          // Do nothing 
-196          echo 'Could not get test summary for failure' 
-197      } 
-198       
-199      slackSend channel: '#alerts', color: colorSlack, message: slackMessage 
-200  } 
-201  
- 
-202  podTemplate(label: label, containers: [ 
-203      containerTemplate(name: 'gcloud', image: 'google/cloud-sdk:latest', ttyEnabled: true, command: 'cat'), 
-204      containerTemplate(name: 'sbt', image: 'spikerlabs/scala-sbt:scala-2.11.12-sbt-1.2.6', ttyEnabled: true, command: 'cat') 
-205    ]) { 
-206  
- 
-207  ansiColor('xterm') { 
-208      timestamps { 
-209            logstash { 
-210              node(label) { 
-211  
- 
-212                      try { 
-213  
- 
-214                              container('gcloud') { 
-215                                  stage('1 - Clone repository') { 
-216                                      withCredentials([file(credentialsId: 'key-sa', variable: 'GC_KEY')]) { 
-217                                              //sh("gcloud auth activate-service-account --key-file=${GC_KEY};") 
-218                                              //sh("gcloud source repos clone rmg-de-ml --project=${project};") 
-219                                          } 
-220                                      } 
-221                                      checkout scm 
-222                                      echo 'Started' 
-223                                      slackNotifyStarted() 
-224                                  } 
-225  
- 
-226                              container('sbt') { 
-227                                  stage('2 - Compile') { 
-228                                      //sh('sbt compile;') 
-229                                      echo 'Compile complete' 
-230                                  } 
-231                                  stage('3 - Check Styles') { 
-232                                      //sh('sbt scalastyle;') 
-233                                      //checkstyle pattern: 'target/scalastyle-result.xml' 
-234  
- 
-235                                      //sh('sbt dependencyUpdatesReport;') 
-236                                      //archiveArtifacts artifacts: 'target/dependency-updates.txt', fingerprint: false 
-237                                      //env.DEPENDENCY_UPDATES = readFile 'target/dependency-updates.txt' 
-238                                  } 
-239                                  stage('4 - Automated Tests') { 
-240  
- 
-241                                      parallel "4.1 - Unit Tests": { 
-242                                              sh('sbt clean coverage test;sbt coverageReport;') 
-243                                              step([$class: 'ScoveragePublisher', reportDir: 'target/scala-2.11/scoverage-report', reportFile: 'scoverage.xml']) 
-244                                              junit 'target/junit/*.xml' 
-245                                          }, 
-246  
- 
-247                                          "4.2 - Integration Tests": { 
-248                                              sh('sleep 5s') 
-249                                         }, 
-250  
- 
-251                                          "4.3 - Performance Tests": { 
-252                                              sh('sleep 10s') 
-253                                          } 
-254  
- 
-255                                  } 
-256                                  stage('5 - Package') { 
-257                                      //sh('sbt package;') 
-258                                      //archiveArtifacts artifacts: 'target/**/*.jar', fingerprint: true 
-259                                      echo 'Package complete' 
-260                                  } 
-261                                  stage('6 - Documentation') { 
-262                                      sh('sbt doc;') 
-263                                      publishHTML target: [ 
-264                                          allowMissing: false, 
-265                                          alwaysLinkToLastBuild: false, 
-266                                          keepAll: true, 
-267                                          reportDir: 'target/scala-2.11/api', 
-268                                          reportFiles: '*', 
-269                                          reportName: 'Scala Docs' 
-270                                        ] 
-271                                  } 
-272                                  stage('7 - Publish') { 
-273  
- 
-274                                      try{ 
-275                                          //sh('sbt publish;') 
-276                                          echo 'Publish complete' 
-277                                      } catch (e) { 
-278                                          retry(2) { 
-279                                              sleep 10 
-280                                              sh('sbt publish;') 
-281                                          } 
-282                                      } 
-283  
- 
-284                                  } 
-285                                  echo 'Successfully completed' 
-286                                  slackNotifySuccess() 
-287                                  echo 'Success notification sent' 
-288                              } 
-289                          } 
-290                    catch (e) { 
-291                        slackNotifyFailure(e) 
-292                        throw e 
-293                    } finally { 
-294                        //slackNotify(currentBuild.result) 
-295                    } 
-296                  } 
-297              } 
-298          } 
-299      } 
-300  } 
+#!groovy
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import groovy.json.JsonOutput
+import hudson.tasks.test.AbstractTestResultAction
+import hudson.model.Actionable
+import hudson.tasks.junit.CaseResult
+
+def label = "mypod-${UUID.randomUUID().toString()}"
+def project = "alert-inquiry-205619"
+def slackNotificationChannel = "#alerts"
+
+def author = ""
+def message = ""
+
+def populateGitInfo() {
+    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
+    echo author + '(inside method)'
+    message = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+    echo message + '(inside method)'
+}
+
+def notifySlack(text, channel, attachments) {
+    def slackURL = 'https://hooks.slack.com/services/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'
+    def jenkinsIcon = 'https://wiki.jenkins-ci.org/download/attachments/2916393/logo.png'
+
+    def payload = JsonOutput.toJson([text: text,
+        channel: channel,
+        username: "Jenkins",
+        icon_url: jenkinsIcon,
+        attachments: attachments
+    ])
+
+    sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}
+
+def slackNotifyStarted() {
+    echo 'Notification Start'
+    def colorSlack = '#D4DADF'
+    populateGitInfo()
+    echo 'Git info populated'
+    echo author + message
+    
+    notifySlack("", "#alerts", [
+        [
+            title: "STARTED: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]",
+            title_link: "${env.BUILD_URL}",
+            color: "${colorSlack}",
+            author_name: "${author}",
+            text: "${message}",
+            actions: [
+            [
+              type: "button",
+              text: "Pipeline",
+              url: "${env.RUN_DISPLAY_URL}"
+            ],
+            [
+              type: "button",
+              text: "Changes",
+              url: "${env.RUN_CHANGES_DISPLAY_URL}"
+            ],
+            [
+              type: "button",
+              text: "Job history",
+              url: "${env.JOB_DISPLAY_URL}"
+            ]
+          ],
+          fields: [
+                [
+                    title: "Git Branch",
+                    value: "${env.GIT_BRANCH}",
+                    short: true
+                ],
+                [
+                    title: "Git Commit",
+                    value: "${env.GIT_COMMIT}",
+                    short: true
+                ]
+            ]
+        ]
+    ])
+}
+
+@NonCPS
+String getTestSummary() { 
+    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+    def summary = ""
+
+    if (testResultAction != null) {
+        def total = testResultAction.getTotalCount()
+        def failed = testResultAction.getFailCount()
+        def failedDiff = testResultAction.failureDiffString
+        def skipped = testResultAction.getSkipCount()
+        def passed = total - failed - skipped
+
+        summary = "Passed: ${passed}; Failed: ${failed} ${failedDiff}; Skipped: ${skipped}  out of ${total} "
+    } else {
+        summary = "No tests found"
+    }
+    return summary
+}
+
+@NonCPS
+def getFailedTests() {
+    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+    def failedTestsString = ""
+
+    if (testResultAction != null) {
+        echo 'check test failures 1'
+        def failedTests = testResultAction.getFailedTests()
+        echo 'check test failures 2'
+        if (failedTests.size() > 9) {
+            failedTests = failedTests.subList(0, 8)
+        }
+        echo 'check test failures 3'
+        for(CaseResult cr : failedTests) {
+            echo 'check test failures loop'
+            failedTestsString = failedTestsString + "${cr.getFullDisplayName()}:\n${cr.getErrorDetails()}\n\n"
+        }
+        echo 'check test failures 4'
+    }
+    echo 'check test failures 5' + failedTestsString
+    return failedTestsString
+}
+
+@NonCPS
+def slackNotifySuccess() {
+    echo 'Notification Success'
+    def colorSlack = '#229954'
+    def testSummary = getTestSummary()
+    echo 'Test summary completed'
+    echo 'Test summary' + testSummary
+    notifySlack("", "#alerts", [
+        [
+            title: "SUCCESS: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]",
+            title_link: "${env.BUILD_URL}",
+            color: "${colorSlack}",
+            author_name: "${author}",
+            text: "${message}",
+            actions: [
+            [
+              type: "button",
+              text: "Pipeline",
+              url: "${env.RUN_DISPLAY_URL}",
+              style: "primary"
+            ],
+            [
+              type: "button",
+              text: "Changes",
+              url: "${env.RUN_CHANGES_DISPLAY_URL}",
+              style: "primary"
+            ],
+            [
+              type: "button",
+              text: "Job history",
+              url: "${env.JOB_DISPLAY_URL}",
+              style: "primary"
+            ]
+          ],
+          fields: [
+                [
+                    title: "Test Results",
+                    value: "${testSummary}",
+                    short: true
+                ]
+            ]
+        ],
+        [
+           "fallback": "Sunny weather!",
+           "image_url": "https://www.clipartmax.com/png/middle/165-1652318_public-domain-icons-simple-weather-icons-sunny.png"
+        ]
+    ])
+}
+
+@NonCPS
+def slackNotifyFailure(e) {
+    echo 'Notify failure'
+    def colorSlack = '#FF9FA1'
+    def slackMessage = "FAILURE: Job `${env.JOB_NAME}` [<${env.BUILD_URL}|#${env.BUILD_NUMBER}>] (<${env.RUN_DISPLAY_URL}|  Pipeline>)\n\t"
+    try{
+        def testSummary = getTestSummary()
+        echo 'Test summary completed'
+        echo 'Test summary' + testSummary
+        def failedTests = getFailedTests()
+        echo 'Failed tests completed'
+        echo 'Failed tests' + failedTests
+        slackMessage = slackMessage + "```" + testSummary + "```\n\t"
+        slackMessage = slackMessage + "```" + failedTests + "```\n\t"
+        if (e != null){
+            slackMessage = slackMessage + "```" + e.toString() + "```\n\t"
+        }        
+    } catch(ex) {
+        // Do nothing
+        echo 'Could not get test summary for failure'
+    }
+    
+    slackSend channel: '#alerts', color: colorSlack, message: slackMessage
+}
+
+podTemplate(label: label, containers: [
+    containerTemplate(name: 'gcloud', image: 'google/cloud-sdk:latest', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'sbt', image: 'spikerlabs/scala-sbt:scala-2.11.12-sbt-1.2.6', ttyEnabled: true, command: 'cat')
+  ]) {
+
+ansiColor('xterm') {
+    timestamps {
+          logstash {
+            node(label) {
+
+                    try {
+
+                            container('gcloud') {
+                                stage('1 - Clone repository') {
+                                    withCredentials([file(credentialsId: 'key-sa', variable: 'GC_KEY')]) {
+                                            //sh("gcloud auth activate-service-account --key-file=${GC_KEY};")
+                                            //sh("gcloud source repos clone rmg-de-ml --project=${project};")
+                                        }
+                                    }
+                                    checkout scm
+                                    echo 'Started'
+                                    slackNotifyStarted()
+                                }
+
+                            container('sbt') {
+                                stage('2 - Compile') {
+                                    //sh('sbt compile;')
+                                    echo 'Compile complete'
+                                }
+                                stage('3 - Check Styles') {
+                                    //sh('sbt scalastyle;')
+                                    //checkstyle pattern: 'target/scalastyle-result.xml'
+
+                                    //sh('sbt dependencyUpdatesReport;')
+                                    //archiveArtifacts artifacts: 'target/dependency-updates.txt', fingerprint: false
+                                    //env.DEPENDENCY_UPDATES = readFile 'target/dependency-updates.txt'
+                                }
+                                stage('4 - Automated Tests') {
+
+                                    parallel "4.1 - Unit Tests": {
+                                            sh('sbt clean coverage test;sbt coverageReport;')
+                                            step([$class: 'ScoveragePublisher', reportDir: 'target/scala-2.11/scoverage-report', reportFile: 'scoverage.xml'])
+                                            junit 'target/junit/*.xml'
+                                        },
+
+                                        "4.2 - Integration Tests": {
+                                            sh('sleep 5s')
+                                       },
+
+                                        "4.3 - Performance Tests": {
+                                            sh('sleep 10s')
+                                        }
+
+                                }
+                                stage('5 - Package') {
+                                    //sh('sbt package;')
+                                    //archiveArtifacts artifacts: 'target/**/*.jar', fingerprint: true
+                                    echo 'Package complete'
+                                }
+                                stage('6 - Documentation') {
+                                    sh('sbt doc;')
+                                    publishHTML target: [
+                                        allowMissing: false,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll: true,
+                                        reportDir: 'target/scala-2.11/api',
+                                        reportFiles: '*',
+                                        reportName: 'Scala Docs'
+                                      ]
+                                }
+                                stage('7 - Publish') {
+
+                                    try{
+                                        //sh('sbt publish;')
+                                        echo 'Publish complete'
+                                    } catch (e) {
+                                        retry(2) {
+                                            sleep 10
+                                            sh('sbt publish;')
+                                        }
+                                    }
+
+                                }
+                                echo 'Successfully completed'
+                                slackNotifySuccess()
+                                echo 'Success notification sent'
+                            }
+                        }
+                  catch (e) {
+                      slackNotifyFailure(e)
+                      throw e
+                  } finally {
+                      //slackNotify(currentBuild.result)
+                  }
+                }
+            }
+        }
+    }
+}
+
+
