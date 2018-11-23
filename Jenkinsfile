@@ -1,3 +1,4 @@
+@Library('jenkins-shared-library') _
 node ("scala_agent") {
     try {
         stage('hello') {
