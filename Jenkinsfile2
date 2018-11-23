@@ -54,17 +54,17 @@ def slackNotifyStarted() {
             [
               type: "button",
               text: "Pipeline",
-              url: "${env.RUN_DISPLAY_URL}"
+              url: "${RUN_DISPLAY_URL}"
             ],
             [
               type: "button",
               text: "Changes",
-              url: "${env.RUN_CHANGES_DISPLAY_URL}"
+              url: "${RUN_CHANGES_DISPLAY_URL}"
             ],
             [
               type: "button",
               text: "Job history",
-              url: "${env.JOB_DISPLAY_URL}"
+              url: "${JOB_DISPLAY_URL}"
             ]
           ],
           fields: [
@@ -143,19 +143,19 @@ def slackNotifySuccess() {
             [
               type: "button",
               text: "Pipeline",
-              url: "${env.RUN_DISPLAY_URL}",
+              url: "${RUN_DISPLAY_URL}",
               style: "primary"
             ],
             [
               type: "button",
               text: "Changes",
-              url: "${env.RUN_CHANGES_DISPLAY_URL}",
+              url: "${RUN_CHANGES_DISPLAY_URL}",
               style: "primary"
             ],
             [
               type: "button",
               text: "Job history",
-              url: "${env.JOB_DISPLAY_URL}",
+              url: "${JOB_DISPLAY_URL}",
               style: "primary"
             ]
           ],
