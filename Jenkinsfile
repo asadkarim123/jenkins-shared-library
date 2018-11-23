@@ -1,13 +1,27 @@
 #!groovy
-@Library('jenkins-shared-library') _
-
-int ns(){
-        slackNotifyFailure()
-slackNotifySuccess()
-getFailedTests()
-getTestSummary()
-slackNotifyStarted()
-notifySlack()
+@Library('jenkins-shared-library')
+pipeline {   
+agent any   
+stages {       
+stage("notifySlack") {           
+steps {           notifySlack       
 }
-
-echo ns()
+        stage("slackNotifyStarted") {           
+steps {           slackNotifyStarted       
+}
+                stage("getTestSummary") {           
+steps {           getTestSummary       
+}
+                        stage("getFailedTests") {           
+steps {           getFailedTests       
+}
+                                stage("slackNotifySuccess") {           
+steps {           slackNotifySuccess       
+}
+                                        stage("slackNotifyFailure") {           
+steps {           slackNotifyFailure       
+}
+                                                
+}   
+}
+}
