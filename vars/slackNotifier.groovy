@@ -63,9 +63,8 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     }
     return summary
   }
-    def testSummaryRaw = getTestSummary()
-  // format test summary as a code block
-  def testSummary = "```${testSummaryRaw}```"
+
+  def testSummary = getTestSummary()
   println testSummary.toString()
 
 
