@@ -62,52 +62,6 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     }
     return summary
   }
-  def getFailedTests() {
-    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
-    def failedTestsString = ""
-
-    if (testResultAction != null) {
-        echo 'check test failures 1'
-        def failedTests = testResultAction.getFailedTests()
-        echo 'check test failures 2'
-        if (failedTests.size() > 9) {
-            failedTests = failedTests.subList(0, 8)
-        }
-        echo 'check test failures 3'
-        for(CaseResult cr : failedTests) {
-            echo 'check test failures loop'
-            failedTestsString = failedTestsString + "${cr.getFullDisplayName()}:\n${cr.getErrorDetails()}\n\n"
-        }
-        echo 'check test failures 4'
-    }
-    echo 'check test failures 5' + failedTestsString
-    return failedTestsString
-}
-    def slackNotifySuccess() {
-    echo 'Notification Success'
-    def colorSlack = '#229954'
-    def testSummary = getTestSummary()
-    echo 'Test summary completed'
-    echo 'Test summary' + testSummary
-    notifySlack("", "#alerts", [
-        [
-            title: "SUCCESS: Job `${env.JOB_NAME}` [Build #${env.BUILD_NUMBER}]",
-            title_link: "${env.BUILD_URL}",
-            color: "${colorSlack}",
-            author_name: "${author}",
-            text: "${message}",
-            actions: [
-            fields: [
-                  [
-                    title: "Test Results",
-                    value: "${testSummary}",
-                    short: true
-                ]
-            ]
-        ]
-    ]
-      ])
-}
 
 
   JSONObject attachment = new JSONObject();
