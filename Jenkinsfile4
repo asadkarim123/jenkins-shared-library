@@ -14,7 +14,7 @@ stage('Stage 1') {
     post {
         always {
 	    /* Use slackNotifier.groovy from shared library and provide current build result as parameter */   
-            slackNotifier(currentBuild.currentResult)
+            notifySlack(currentBuild.currentResult)
             cleanWs()
         }
     }
