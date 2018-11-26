@@ -30,17 +30,17 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
 
   // Override default values based on build status
   if (buildStatus == 'STARTED') {
-    color = 'YELLOW'
-    colorCode = '#FFFF00'
+    color = 'GREY'
+    colorCode = '#	#f0ffff'
   } else if (buildStatus == 'SUCCESSFUL') {
     color = 'GREEN'
-    colorCode = 'good'
+    colorCode = '#458b74'
   } else if (buildStatus == 'UNSTABLE') {
     color = 'YELLOW'
-    colorCode = 'warning'
+    colorCode = '	#ffd700'
   } else {
     color = 'RED'
-    colorCode = 'danger'
+    colorCode = '	#cd2626'
   }
 
   // get test results for slack message
