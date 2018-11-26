@@ -62,6 +62,10 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     }
     return summary
   }
+    def testSummaryRaw = getTestSummary()
+  // format test summary as a code block
+  def testSummary = "```${testSummaryRaw}```"
+  println testSummary.toString()
 
 
   JSONObject attachment = new JSONObject();
