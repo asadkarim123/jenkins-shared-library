@@ -10,7 +10,7 @@ pipeline {
     }
     post { 
         always { 
-            notifySlack currentBuild.result
+            notifySlack.call()
         }
     }
 }
