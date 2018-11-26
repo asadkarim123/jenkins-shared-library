@@ -10,7 +10,7 @@ pipeline {
     }
     post { 
         always { 
-            notifySlack(text, channel, attachments)
+            notifySlack()
         }
     }
 }
