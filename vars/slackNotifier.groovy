@@ -52,11 +52,12 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     if (testResultAction != null) {
         def total = testResultAction.getTotalCount()
         def failed = testResultAction.getFailCount()
-        def failedDiff = testResultAction.failureDiffString
         def skipped = testResultAction.getSkipCount()
-        def passed = total - failed - skipped
 
-        summary = "Passed: ${passed}; Failed: ${failed} ${failedDiff}; Skipped: ${skipped}  out of ${total} "
+        summary = "Test results:\n\t"
+        summary = summary + ("Passed: " + (total - failed - skipped))
+        summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
+        summary = summary + (", Skipped: " + skipped)  
     } else {
         summary = "No tests found"
     }
