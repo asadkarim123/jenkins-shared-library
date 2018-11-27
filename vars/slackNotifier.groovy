@@ -49,7 +49,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
     def summary = ""
 
-    if (testResultAction != null) {
+    if (testResultAction = null) {
         def total = testResultAction.getTotalCount()
         def failed = testResultAction.getFailCount()
         def skipped = testResultAction.getSkipCount()
