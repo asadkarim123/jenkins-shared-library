@@ -59,7 +59,14 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
         summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
         summary = summary + (", Skipped: " + skipped)  
     } else {
-        summary = "No tests found"
+        def total = testResultAction.getTotalCount()
+        def failed = testResultAction.getFailCount()
+        def skipped = testResultAction.getSkipCount()
+
+        summary = "Test results:\n\t"
+        summary = summary + ("Passed: " + (total - failed - skipped))
+        summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
+        summary = summary + (", Skipped: " + skipped) 
     }
     return summary
   }
