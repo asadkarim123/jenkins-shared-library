@@ -263,12 +263,6 @@ ansiColor('xterm') {
                                 echo 'Success notification sent'
                             }
                         }
-                  catch (e) {
-                      slackNotifyFailure(e)
-                      throw e
-                  } finally {
-                      //slackNotify(currentBuild.result)
-                  }
                 }
             }
         }
