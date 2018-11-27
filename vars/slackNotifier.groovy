@@ -17,7 +17,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
 
   // Default values
   def colorName = 'RED'
-  def colorCode = '#458b74'
+  def colorCode = '#cd2626'
   def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}] (<${env.RUN_DISPLAY_URL}|Open>) (<${env.RUN_CHANGES_DISPLAY_URL}|  Changes>)'"
   def title = "${env.JOB_NAME} Build: ${env.BUILD_NUMBER}"
   def title_link = "${env.RUN_DISPLAY_URL}"
@@ -40,7 +40,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     colorCode = '#ffd700'
   } else {
     color = 'RED'
-    colorCode = '#cd2626'
+    colorCode = '#458b74'
   }
 
   @NonCPS
