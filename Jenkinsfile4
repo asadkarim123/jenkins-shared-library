@@ -3,14 +3,23 @@
 
 pipeline {
     agent any
-    stages{
-stage('Stage 1') {
+	stages {
+        stage('Build') {
             steps {
-                echo 'Hello world!' 
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
             }
         }
     }
-
     post {
         always {
 	    /* Use slackNotifier.groovy from shared library and provide current build result as parameter */   
