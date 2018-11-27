@@ -51,7 +51,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
 
     if (testResultAction != null) {
     echo "Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
-    }     } else {
+    }     else {
         summary = "No tests found"
     }
     return summary
