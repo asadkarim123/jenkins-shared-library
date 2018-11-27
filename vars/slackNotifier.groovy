@@ -203,7 +203,7 @@ ansiColor('xterm') {
                                 //stage('2 - Compile') {
                                     //sh('sbt compile;')
                                    // echo 'Compile complete'
-                                }
+                                }}
                                 //stage('3 - Check Styles') {
                                     //sh('sbt scalastyle;')
                                     //checkstyle pattern: 'target/scalastyle-result.xml'
@@ -266,8 +266,7 @@ ansiColor('xterm') {
                 }
             }
         }
-    }
-}
+
 
   JSONObject attachment = new JSONObject();
   attachment.put('author',"jenkins");
