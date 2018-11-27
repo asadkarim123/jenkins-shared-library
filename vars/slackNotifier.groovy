@@ -18,7 +18,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
   // Default values
   def colorName = 'RED'
   def colorCode = '#cd2626'
-  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}] (<${env.RUN_DISPLAY_URL}|Open>) (<${env.RUN_CHANGES_DISPLAY_URL}|  Changes>)'"
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}] (<${env.RUN_DISPLAY_URL}|Open>) (<${env.RUN_CHANGES_DISPLAY_URL}|  Changes>)"
   def title = "${env.JOB_NAME} Build: ${env.BUILD_NUMBER}"
   def title_link = "${env.RUN_DISPLAY_URL}"
   def branchName = "${env.BRANCH_NAME}"
@@ -55,7 +55,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
 
         summary = "Test results:\n\t"
         summary = summary + ("Passed: " + (total - failed - skipped))
-        summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
+        summary = summary + (", Failed: " + failed)
         summary = summary + (", Skipped: " + skipped)
     } else {
         summary = "No tests found"
@@ -64,8 +64,7 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
   }
   def testSummaryRaw = getTestSummary()
   // format test summary as a code block
-  def testSummary = "```${testSummaryRaw}```"
-  println testSummary.toString()
+  println testSummary
   
   JSONObject attachment = new JSONObject();
   attachment.put('author',"jenkins");
