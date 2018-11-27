@@ -64,7 +64,8 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
   }
   def testSummaryRaw = getTestSummary()
   // format test summary as a code block
-  println testSummary
+  def testSummary = "```${testSummaryRaw}```"
+  println testSummary.toString()
   
   JSONObject attachment = new JSONObject();
   attachment.put('author',"jenkins");
