@@ -44,8 +44,8 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
   }
 
   @NonCPS
-  def getTestSummary () {
-    AbstractTestResultAction testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+  def getTestSummary = { ->
+    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
     def summary = ""
 
     if (testResultAction != null) {
@@ -57,9 +57,8 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
         summary = summary + ("Passed: " + (total - failed - skipped))
         summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
         summary = summary + (", Skipped: " + skipped)
-    } 
-    if (failed == 0){
-      currentBuild.result = 'SUCCESS'
+    } else {
+        summary = "No tests found"
     }
     return summary
   }
