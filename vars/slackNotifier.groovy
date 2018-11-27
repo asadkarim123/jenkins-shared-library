@@ -43,25 +43,30 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     colorCode = '#cd2626'
   }
 
-  // get test results for slack message
   @NonCPS
-  def getTestSummary = { ->
-    def testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+  def getTestSummary () {
+    AbstractTestResultAction testResultAction = currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
     def summary = ""
 
     if (testResultAction != null) {
-    echo "Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
-    }     else {
-        summary = "No tests found"
+        def total = testResultAction.getTotalCount
+        def failed = testResultAction.getFailCount
+        def skipped = testResultAction.getSkipCount
+
+        summary = "Test results:\n\t"
+        summary = summary + ("Passed: " + (total - failed - skipped))
+        summary = summary + (", Failed: " + failed + " ${testResultAction.failureDiffString}")
+        summary = summary + (", Skipped: " + skipped)
+    } 
+    if (failed == 0){
+      currentBuild.result = 'SUCCESS'
     }
     return summary
   }
-
   def testSummaryRaw = getTestSummary()
   // format test summary as a code block
-  def testSummary = testSummaryRaw
+  def testSummary = "```${testSummaryRaw}```"
   println testSummary.toString()
-
 
   JSONObject attachment = new JSONObject();
   attachment.put('author',"jenkins");
