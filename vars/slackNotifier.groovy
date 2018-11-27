@@ -49,9 +49,9 @@ def call(String buildStatus = 'STARTED', String channel = '#alerts') {
     def summary = ""
 
     if (testResultAction != null) {
-        def total = testResultAction.getTotalCount
-        def failed = testResultAction.getFailCount
-        def skipped = testResultAction.getSkipCount
+        def total = testResultAction.getTotalCount()
+        def failed = testResultAction.getFailCount()
+        def skipped = testResultAction.getSkipCount()
 
         summary = "Test results:\n\t"
         summary = summary + ("Passed: " + (total - failed - skipped))
